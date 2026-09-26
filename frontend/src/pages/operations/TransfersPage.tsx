@@ -20,15 +20,22 @@ export default function TransfersPage() {
   const [filters, setFilters] = useState<OperationFiltersState>({
     reference: "",
     contact: "",
+    status: "",
+    warehouse: "",
   });
 
   const [operations, setOperations] = useState(MOCK_TRANSFERS);
 
   const filtered = useMemo(() => {
-    return operations.filter((op) =>
-      op.referenceCode.toLowerCase().includes(filters.reference.toLowerCase())
-    );
-  }, [filters.reference, operations]);
+    return operations.filter((op) => {
+      const refMatch = op.referenceCode
+        .toLowerCase()
+        .includes(filters.reference.toLowerCase());
+      const statusMatch = !filters.status || op.status === filters.status;
+      const warehouseMatch = !filters.warehouse || op.referenceWarehouse.id === filters.warehouse;
+      return refMatch && statusMatch && warehouseMatch;
+    });
+  }, [filters, operations]);
 
   const handleStatusChange = (operationId: string, newStatus: any) => {
     setOperations((prev) =>
@@ -62,6 +69,8 @@ export default function TransfersPage() {
           filters={filters}
           onChange={setFilters}
           showContactFilter={false}
+          showWarehouseFilter={true}
+          availableStatuses={["DRAFT", "WAITING", "READY", "DONE"]}
         />
       </div>
 

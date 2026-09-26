@@ -19,6 +19,8 @@ export default function ReceiptsPage() {
   const [filters, setFilters] = useState<OperationFiltersState>({
     reference: "",
     contact: "",
+    status: "",
+    warehouse: "",
   });
 
   const [operations, setOperations] = useState(MOCK_RECEIPTS);
@@ -30,8 +32,10 @@ export default function ReceiptsPage() {
         .includes(filters.reference.toLowerCase());
       const contactMatch =
         !filters.contact ||
-        op.partner?.name.toLowerCase().includes(filters.contact.toLowerCase());
-      return refMatch && contactMatch;
+        (op.partner?.name ?? "").toLowerCase().includes(filters.contact.toLowerCase());
+      const statusMatch = !filters.status || op.status === filters.status;
+      const warehouseMatch = !filters.warehouse || op.referenceWarehouse.id === filters.warehouse;
+      return refMatch && contactMatch && statusMatch && warehouseMatch;
     });
   }, [filters, operations]);
 
@@ -66,6 +70,8 @@ export default function ReceiptsPage() {
           filters={filters}
           onChange={setFilters}
           showContactFilter={true}
+          showWarehouseFilter={true}
+          availableStatuses={["DRAFT", "READY", "DONE", "CANCELLED"]}
         />
       </div>
 

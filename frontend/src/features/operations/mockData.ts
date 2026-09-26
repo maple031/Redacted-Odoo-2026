@@ -15,16 +15,16 @@ const LOC_TRANSIT  = { id: "loc-transit",  name: "Transit Zone" };
 const LOC_HYD      = { id: "loc-hyd",      name: "HYD/Stock" };
 
 // ── Partners ─────────────────────────────────────────────────────────────────
-const PARTNER_TECHZONE   = { id: "p-1", name: "TechZone Suppliers Pvt. Ltd." };
-const PARTNER_GLOBALCOM  = { id: "p-2", name: "GlobalCom Electronics" };
-const PARTNER_INFRA      = { id: "p-3", name: "Infra Solutions Ltd." };
-const PARTNER_CLIENT_A   = { id: "p-4", name: "Acme Corp" };
-const PARTNER_CLIENT_B   = { id: "p-5", name: "Sunrise Retail" };
+const PARTNER_TECHZONE  = { id: "p-1", name: "TechZone Suppliers Pvt. Ltd." };
+const PARTNER_GLOBALCOM = { id: "p-2", name: "GlobalCom Electronics" };
+const PARTNER_INFRA     = { id: "p-3", name: "Infra Solutions Ltd." };
+const PARTNER_CLIENT_A  = { id: "p-4", name: "Acme Corp" };
+const PARTNER_CLIENT_B  = { id: "p-5", name: "Sunrise Retail" };
 
-// ── Users ────────────────────────────────────────────────────────────────────
-const USER_PRIYA  = { id: "u-1", name: "Priya Sharma" };
-const USER_RAHUL  = { id: "u-2", name: "Rahul Verma" };
-const USER_ANITA  = { id: "u-3", name: "Anita Desai" };
+// ── Users — contract shape: { id, loginId } ─────────────────────────────────
+const USER_PRIYA = { id: "u-1", loginId: "priya.sharma" };
+const USER_RAHUL = { id: "u-2", loginId: "rahul.verma" };
+const USER_ANITA = { id: "u-3", loginId: "anita.desai" };
 
 // ── Products ─────────────────────────────────────────────────────────────────
 const PROD_LAPTOP  = { id: "prod-1", sku: "EL-LT-001", name: "Laptop 15\" ProX",       uomSymbol: "Unit" };
@@ -51,6 +51,7 @@ export const MOCK_RECEIPTS: InventoryOperation[] = [
     referenceWarehouse: WH_MAIN,
     scheduledAt: "2026-09-10T09:00:00Z",
     completedAt: "2026-09-10T14:32:00Z",
+    cancelledAt: null,
     kanbanRank: 10,
     notes: "Q3 hardware replenishment batch.",
     lines: [
@@ -68,11 +69,14 @@ export const MOCK_RECEIPTS: InventoryOperation[] = [
     responsibleUser: USER_RAHUL,
     referenceWarehouse: WH_MAIN,
     scheduledAt: "2026-09-25T10:00:00Z",
+    completedAt: null,
+    cancelledAt: null,
     kanbanRank: 20,
+    notes: null,
     lines: [
-      { id: "rl-4", product: PROD_MOUSE,   sourceLocation: LOC_VENDORS, destinationLocation: LOC_SHELF_B, requestedQty: 50, doneQty: 0 },
-      { id: "rl-5", product: PROD_CABLE,   sourceLocation: LOC_VENDORS, destinationLocation: LOC_SHELF_B, requestedQty: 100, doneQty: 0 },
-      { id: "rl-6", product: PROD_WEBCAM,  sourceLocation: LOC_VENDORS, destinationLocation: LOC_SHELF_C, requestedQty: 25, doneQty: 0 },
+      { id: "rl-4", product: PROD_MOUSE,  sourceLocation: LOC_VENDORS, destinationLocation: LOC_SHELF_B, requestedQty: 50,  doneQty: 0 },
+      { id: "rl-5", product: PROD_CABLE,  sourceLocation: LOC_VENDORS, destinationLocation: LOC_SHELF_B, requestedQty: 100, doneQty: 0 },
+      { id: "rl-6", product: PROD_WEBCAM, sourceLocation: LOC_VENDORS, destinationLocation: LOC_SHELF_C, requestedQty: 25,  doneQty: 0 },
     ],
   },
   {
@@ -84,10 +88,12 @@ export const MOCK_RECEIPTS: InventoryOperation[] = [
     responsibleUser: USER_ANITA,
     referenceWarehouse: WH_MAIN,
     scheduledAt: "2026-09-30T11:00:00Z",
+    completedAt: null,
+    cancelledAt: null,
     kanbanRank: 30,
     notes: "Pending PO confirmation from supplier.",
     lines: [
-      { id: "rl-7", product: PROD_HEADSET, sourceLocation: LOC_VENDORS, destinationLocation: LOC_SHELF_C, requestedQty: 30, doneQty: 0 },
+      { id: "rl-7", product: PROD_HEADSET, sourceLocation: LOC_VENDORS, destinationLocation: LOC_SHELF_C, requestedQty: 30,  doneQty: 0 },
       { id: "rl-8", product: PROD_PAPER,   sourceLocation: LOC_VENDORS, destinationLocation: LOC_SHELF_C, requestedQty: 200, doneQty: 0 },
     ],
   },
@@ -101,10 +107,12 @@ export const MOCK_RECEIPTS: InventoryOperation[] = [
     referenceWarehouse: WH_HYD,
     scheduledAt: "2026-09-05T08:00:00Z",
     completedAt: "2026-09-05T13:00:00Z",
+    cancelledAt: null,
     kanbanRank: 40,
+    notes: null,
     lines: [
-      { id: "rl-9",  product: PROD_LAPTOP,  sourceLocation: LOC_VENDORS, destinationLocation: LOC_HYD, requestedQty: 5, doneQty: 5 },
-      { id: "rl-10", product: PROD_MOUSE,   sourceLocation: LOC_VENDORS, destinationLocation: LOC_HYD, requestedQty: 10, doneQty: 10 },
+      { id: "rl-9",  product: PROD_LAPTOP, sourceLocation: LOC_VENDORS, destinationLocation: LOC_HYD, requestedQty: 5,  doneQty: 5  },
+      { id: "rl-10", product: PROD_MOUSE,  sourceLocation: LOC_VENDORS, destinationLocation: LOC_HYD, requestedQty: 10, doneQty: 10 },
     ],
   },
   {
@@ -116,6 +124,8 @@ export const MOCK_RECEIPTS: InventoryOperation[] = [
     responsibleUser: USER_RAHUL,
     referenceWarehouse: WH_HYD,
     scheduledAt: "2026-09-18T10:00:00Z",
+    completedAt: null,
+    cancelledAt: "2026-09-19T08:00:00Z",
     kanbanRank: 50,
     notes: "Cancelled — supplier unable to fulfil order.",
     lines: [
@@ -138,11 +148,13 @@ export const MOCK_DELIVERIES: InventoryOperation[] = [
     referenceWarehouse: WH_MAIN,
     scheduledAt: "2026-09-12T09:00:00Z",
     completedAt: "2026-09-12T16:00:00Z",
+    cancelledAt: null,
     kanbanRank: 10,
+    notes: null,
     lines: [
-      { id: "dl-1", product: PROD_LAPTOP,  sourceLocation: LOC_SHELF_A, destinationLocation: LOC_CUSTOMER, requestedQty: 5,  doneQty: 5  },
-      { id: "dl-2", product: PROD_MONITOR, sourceLocation: LOC_SHELF_A, destinationLocation: LOC_CUSTOMER, requestedQty: 5,  doneQty: 5  },
-      { id: "dl-3", product: PROD_DOCK,    sourceLocation: LOC_SHELF_B, destinationLocation: LOC_CUSTOMER, requestedQty: 5,  doneQty: 5  },
+      { id: "dl-1", product: PROD_LAPTOP,  sourceLocation: LOC_SHELF_A, destinationLocation: LOC_CUSTOMER, requestedQty: 5, doneQty: 5 },
+      { id: "dl-2", product: PROD_MONITOR, sourceLocation: LOC_SHELF_A, destinationLocation: LOC_CUSTOMER, requestedQty: 5, doneQty: 5 },
+      { id: "dl-3", product: PROD_DOCK,    sourceLocation: LOC_SHELF_B, destinationLocation: LOC_CUSTOMER, requestedQty: 5, doneQty: 5 },
     ],
   },
   {
@@ -154,7 +166,10 @@ export const MOCK_DELIVERIES: InventoryOperation[] = [
     responsibleUser: USER_ANITA,
     referenceWarehouse: WH_MAIN,
     scheduledAt: "2026-09-27T10:00:00Z",
+    completedAt: null,
+    cancelledAt: null,
     kanbanRank: 20,
+    notes: null,
     lines: [
       { id: "dl-4", product: PROD_MOUSE,  sourceLocation: LOC_SHELF_B, destinationLocation: LOC_CUSTOMER, requestedQty: 20, doneQty: 0 },
       { id: "dl-5", product: PROD_CABLE,  sourceLocation: LOC_SHELF_B, destinationLocation: LOC_CUSTOMER, requestedQty: 40, doneQty: 0 },
@@ -170,6 +185,8 @@ export const MOCK_DELIVERIES: InventoryOperation[] = [
     responsibleUser: USER_RAHUL,
     referenceWarehouse: WH_MAIN,
     scheduledAt: "2026-09-29T09:00:00Z",
+    completedAt: null,
+    cancelledAt: null,
     kanbanRank: 30,
     notes: "Awaiting payment confirmation.",
     lines: [
@@ -185,7 +202,10 @@ export const MOCK_DELIVERIES: InventoryOperation[] = [
     responsibleUser: USER_PRIYA,
     referenceWarehouse: WH_MAIN,
     scheduledAt: "2026-10-02T10:00:00Z",
+    completedAt: null,
+    cancelledAt: null,
     kanbanRank: 40,
+    notes: null,
     lines: [
       { id: "dl-8", product: PROD_LAPTOP, sourceLocation: LOC_SHELF_A, destinationLocation: LOC_CUSTOMER, requestedQty: 3, doneQty: 0 },
       { id: "dl-9", product: PROD_DOCK,   sourceLocation: LOC_SHELF_B, destinationLocation: LOC_CUSTOMER, requestedQty: 3, doneQty: 0 },
@@ -200,6 +220,8 @@ export const MOCK_DELIVERIES: InventoryOperation[] = [
     responsibleUser: USER_ANITA,
     referenceWarehouse: WH_MAIN,
     scheduledAt: "2026-09-20T11:00:00Z",
+    completedAt: null,
+    cancelledAt: "2026-09-20T15:00:00Z",
     kanbanRank: 50,
     notes: "Order cancelled by customer.",
     lines: [
@@ -217,14 +239,17 @@ export const MOCK_TRANSFERS: InventoryOperation[] = [
     referenceCode: "WH/TRSF/0001",
     operationType: "TRANSFER",
     status: "DONE",
+    partner: null,
     responsibleUser: USER_RAHUL,
     referenceWarehouse: WH_MAIN,
     scheduledAt: "2026-09-08T08:00:00Z",
     completedAt: "2026-09-08T11:30:00Z",
+    cancelledAt: null,
     kanbanRank: 10,
+    notes: null,
     lines: [
-      { id: "tl-1", product: PROD_LAPTOP,  sourceLocation: LOC_RECEIPT,  destinationLocation: LOC_SHELF_A, requestedQty: 20, doneQty: 20 },
-      { id: "tl-2", product: PROD_MONITOR, sourceLocation: LOC_RECEIPT,  destinationLocation: LOC_SHELF_A, requestedQty: 10, doneQty: 10 },
+      { id: "tl-1", product: PROD_LAPTOP,  sourceLocation: LOC_RECEIPT, destinationLocation: LOC_SHELF_A, requestedQty: 20, doneQty: 20 },
+      { id: "tl-2", product: PROD_MONITOR, sourceLocation: LOC_RECEIPT, destinationLocation: LOC_SHELF_A, requestedQty: 10, doneQty: 10 },
     ],
   },
   {
@@ -232,14 +257,17 @@ export const MOCK_TRANSFERS: InventoryOperation[] = [
     referenceCode: "WH/TRSF/0002",
     operationType: "TRANSFER",
     status: "READY",
+    partner: null,
     responsibleUser: USER_PRIYA,
     referenceWarehouse: WH_MAIN,
     scheduledAt: "2026-09-26T09:00:00Z",
+    completedAt: null,
+    cancelledAt: null,
     kanbanRank: 20,
     notes: "Rebalancing between shelf zones.",
     lines: [
-      { id: "tl-3", product: PROD_MOUSE,   sourceLocation: LOC_SHELF_B, destinationLocation: LOC_SHELF_C, requestedQty: 25, doneQty: 0 },
-      { id: "tl-4", product: PROD_CABLE,   sourceLocation: LOC_SHELF_B, destinationLocation: LOC_SHELF_C, requestedQty: 50, doneQty: 0 },
+      { id: "tl-3", product: PROD_MOUSE, sourceLocation: LOC_SHELF_B, destinationLocation: LOC_SHELF_C, requestedQty: 25, doneQty: 0 },
+      { id: "tl-4", product: PROD_CABLE, sourceLocation: LOC_SHELF_B, destinationLocation: LOC_SHELF_C, requestedQty: 50, doneQty: 0 },
     ],
   },
   {
@@ -247,10 +275,14 @@ export const MOCK_TRANSFERS: InventoryOperation[] = [
     referenceCode: "WH/TRSF/0003",
     operationType: "TRANSFER",
     status: "WAITING",
+    partner: null,
     responsibleUser: USER_ANITA,
     referenceWarehouse: WH_MAIN,
     scheduledAt: "2026-09-28T13:00:00Z",
+    completedAt: null,
+    cancelledAt: null,
     kanbanRank: 30,
+    notes: null,
     lines: [
       { id: "tl-5", product: PROD_HEADSET, sourceLocation: LOC_SHELF_C, destinationLocation: LOC_TRANSIT, requestedQty: 10, doneQty: 0 },
     ],
@@ -260,15 +292,18 @@ export const MOCK_TRANSFERS: InventoryOperation[] = [
     referenceCode: "INT/TRSF/0001",
     operationType: "TRANSFER",
     status: "DRAFT",
+    partner: null,
     responsibleUser: USER_RAHUL,
     referenceWarehouse: WH_MAIN,
     scheduledAt: "2026-10-01T08:00:00Z",
+    completedAt: null,
+    cancelledAt: null,
     kanbanRank: 40,
     notes: "Planned inter-warehouse transfer to HYD.",
     lines: [
-      { id: "tl-6", product: PROD_LAPTOP,  sourceLocation: LOC_SHELF_A, destinationLocation: LOC_HYD, requestedQty: 5,  doneQty: 0 },
-      { id: "tl-7", product: PROD_MONITOR, sourceLocation: LOC_SHELF_A, destinationLocation: LOC_HYD, requestedQty: 3,  doneQty: 0 },
-      { id: "tl-8", product: PROD_HEADSET, sourceLocation: LOC_SHELF_C, destinationLocation: LOC_HYD, requestedQty: 8,  doneQty: 0 },
+      { id: "tl-6", product: PROD_LAPTOP,  sourceLocation: LOC_SHELF_A, destinationLocation: LOC_HYD, requestedQty: 5, doneQty: 0 },
+      { id: "tl-7", product: PROD_MONITOR, sourceLocation: LOC_SHELF_A, destinationLocation: LOC_HYD, requestedQty: 3, doneQty: 0 },
+      { id: "tl-8", product: PROD_HEADSET, sourceLocation: LOC_SHELF_C, destinationLocation: LOC_HYD, requestedQty: 8, doneQty: 0 },
     ],
   },
 ];
@@ -276,6 +311,8 @@ export const MOCK_TRANSFERS: InventoryOperation[] = [
 // ════════════════════════════════════════════════════════════════════════════
 // ADJUSTMENTS
 // ════════════════════════════════════════════════════════════════════════════
+// Note: AdjustmentOperation is a local mock type — it does NOT extend
+// InventoryOperation because adjustments use adjustmentLines, not lines.
 export type AdjustmentLine = {
   id: string;
   product: { id: string; sku: string; name: string; uomSymbol: string };
@@ -288,14 +325,24 @@ export type AdjustmentOperation = {
   referenceCode: string;
   operationType: "ADJUSTMENT";
   status: "DRAFT" | "READY" | "DONE";
-  responsibleUser?: { id: string; name: string };
+  /** Contract: { id, loginId } — NOT name */
+  responsibleUser: { id: string; loginId: string } | null;
   referenceWarehouse: { id: string; name: string; shortCode: string };
-  scheduledAt?: string;
-  completedAt?: string;
+  scheduledAt: string | null;
+  completedAt: string | null;
   kanbanRank: number;
-  notes?: string;
+  notes: string | null;
   adjustmentLines: AdjustmentLine[];
 };
+
+/** Helper: build an AdjustmentLineDetails with auto-computed difference */
+function adj(
+  systemQty: number,
+  countedQty: number,
+  reasonCode: AdjustmentLineDetails["reasonCode"]
+): AdjustmentLineDetails {
+  return { systemQty, countedQty, difference: countedQty - systemQty, reasonCode };
+}
 
 export const MOCK_ADJUSTMENTS: AdjustmentOperation[] = [
   {
@@ -310,10 +357,10 @@ export const MOCK_ADJUSTMENTS: AdjustmentOperation[] = [
     kanbanRank: 10,
     notes: "End-of-quarter physical count.",
     adjustmentLines: [
-      { id: "al-1", product: PROD_LAPTOP,  location: LOC_SHELF_A, details: { systemQty: 20, countedQty: 18, reasonCode: "PHYSICAL_COUNT" } },
-      { id: "al-2", product: PROD_MOUSE,   location: LOC_SHELF_B, details: { systemQty: 50, countedQty: 48, reasonCode: "LOSS"           } },
-      { id: "al-3", product: PROD_CABLE,   location: LOC_SHELF_B, details: { systemQty: 100, countedQty: 100, reasonCode: "PHYSICAL_COUNT"} },
-      { id: "al-4", product: PROD_MONITOR, location: LOC_SHELF_A, details: { systemQty: 10, countedQty: 9,  reasonCode: "DAMAGE"         } },
+      { id: "al-1", product: PROD_LAPTOP,  location: LOC_SHELF_A, details: adj(20,  18,  "PHYSICAL_COUNT") },
+      { id: "al-2", product: PROD_MOUSE,   location: LOC_SHELF_B, details: adj(50,  48,  "LOSS")           },
+      { id: "al-3", product: PROD_CABLE,   location: LOC_SHELF_B, details: adj(100, 100, "PHYSICAL_COUNT") },
+      { id: "al-4", product: PROD_MONITOR, location: LOC_SHELF_A, details: adj(10,  9,   "DAMAGE")         },
     ],
   },
   {
@@ -324,10 +371,12 @@ export const MOCK_ADJUSTMENTS: AdjustmentOperation[] = [
     responsibleUser: USER_RAHUL,
     referenceWarehouse: WH_MAIN,
     scheduledAt: "2026-09-26T09:00:00Z",
+    completedAt: null,
     kanbanRank: 20,
+    notes: null,
     adjustmentLines: [
-      { id: "al-5", product: PROD_HEADSET, location: LOC_SHELF_C, details: { systemQty: 30, countedQty: 32, reasonCode: "FOUND"       } },
-      { id: "al-6", product: PROD_DOCK,    location: LOC_SHELF_B, details: { systemQty: 14, countedQty: 14, reasonCode: "PHYSICAL_COUNT"} },
+      { id: "al-5", product: PROD_HEADSET, location: LOC_SHELF_C, details: adj(30, 32, "FOUND")          },
+      { id: "al-6", product: PROD_DOCK,    location: LOC_SHELF_B, details: adj(14, 14, "PHYSICAL_COUNT") },
     ],
   },
   {
@@ -338,12 +387,13 @@ export const MOCK_ADJUSTMENTS: AdjustmentOperation[] = [
     responsibleUser: USER_ANITA,
     referenceWarehouse: WH_MAIN,
     scheduledAt: "2026-09-30T10:00:00Z",
+    completedAt: null,
     kanbanRank: 30,
     notes: "Initial stock entry for new product range.",
     adjustmentLines: [
-      { id: "al-7", product: PROD_TONER,  location: LOC_SHELF_C, details: { systemQty: 0, countedQty: 40, reasonCode: "INITIAL_STOCK" } },
-      { id: "al-8", product: PROD_PAPER,  location: LOC_SHELF_C, details: { systemQty: 0, countedQty: 200, reasonCode: "INITIAL_STOCK" } },
-      { id: "al-9", product: PROD_WEBCAM, location: LOC_SHELF_C, details: { systemQty: 25, countedQty: 23, reasonCode: "CORRECTION"   } },
+      { id: "al-7", product: PROD_TONER,  location: LOC_SHELF_C, details: adj(0,  40,  "INITIAL_STOCK") },
+      { id: "al-8", product: PROD_PAPER,  location: LOC_SHELF_C, details: adj(0,  200, "INITIAL_STOCK") },
+      { id: "al-9", product: PROD_WEBCAM, location: LOC_SHELF_C, details: adj(25, 23,  "CORRECTION")    },
     ],
   },
   {
@@ -356,9 +406,10 @@ export const MOCK_ADJUSTMENTS: AdjustmentOperation[] = [
     scheduledAt: "2026-09-20T08:00:00Z",
     completedAt: "2026-09-20T10:00:00Z",
     kanbanRank: 40,
+    notes: null,
     adjustmentLines: [
-      { id: "al-10", product: PROD_LAPTOP, location: LOC_HYD, details: { systemQty: 5, countedQty: 5,  reasonCode: "PHYSICAL_COUNT" } },
-      { id: "al-11", product: PROD_MOUSE,  location: LOC_HYD, details: { systemQty: 10, countedQty: 9, reasonCode: "DAMAGE"         } },
+      { id: "al-10", product: PROD_LAPTOP, location: LOC_HYD, details: adj(5,  5, "PHYSICAL_COUNT") },
+      { id: "al-11", product: PROD_MOUSE,  location: LOC_HYD, details: adj(10, 9, "DAMAGE")         },
     ],
   },
 ];

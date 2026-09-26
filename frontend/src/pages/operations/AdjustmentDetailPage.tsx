@@ -110,7 +110,7 @@ export default function AdjustmentDetailPage() {
             </dd>
           </div>
           <Field label="Warehouse"  value={adj.referenceWarehouse.name} />
-          <Field label="Responsible" value={adj.responsibleUser?.name} />
+          <Field label="Responsible" value={adj.responsibleUser?.loginId} />
           <Field
             label="Scheduled Date"
             value={
@@ -163,7 +163,7 @@ export default function AdjustmentDetailPage() {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {adj.adjustmentLines.map((line) => {
-                  const diff = line.details.countedQty - line.details.systemQty;
+                  const diff = line.details.difference;
                   return (
                     <tr key={line.id} className="hover:bg-slate-50">
                       <td className="py-2.5 pr-4 font-mono text-xs text-slate-500">

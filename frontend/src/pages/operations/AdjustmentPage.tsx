@@ -17,13 +17,21 @@ export default function AdjustmentPage() {
   const [filters, setFilters] = useState<OperationFiltersState>({
     reference: "",
     contact: "",
+    status: "",
+    warehouse: "",
   });
 
   const filtered = useMemo(() => {
-    return MOCK_ADJUSTMENTS.filter((adj) =>
-      adj.referenceCode.toLowerCase().includes(filters.reference.toLowerCase())
-    );
-  }, [filters.reference]);
+    return MOCK_ADJUSTMENTS.filter((adj) => {
+      const refMatch = adj.referenceCode
+        .toLowerCase()
+        .includes(filters.reference.toLowerCase());
+      const statusMatch = !filters.status || adj.status === filters.status;
+      const warehouseMatch =
+        !filters.warehouse || adj.referenceWarehouse.id === filters.warehouse;
+      return refMatch && statusMatch && warehouseMatch;
+    });
+  }, [filters]);
 
   return (
     <div>
@@ -48,6 +56,8 @@ export default function AdjustmentPage() {
           filters={filters}
           onChange={setFilters}
           showContactFilter={false}
+          showWarehouseFilter={true}
+          availableStatuses={["DRAFT", "READY", "DONE"]}
         />
       </div>
 
@@ -96,7 +106,7 @@ export default function AdjustmentPage() {
                   {adj.referenceWarehouse.shortCode}
                 </td>
                 <td className="px-4 py-2.5 text-slate-700">
-                  {adj.responsibleUser?.name ?? <span className="text-slate-300">—</span>}
+                  {adj.responsibleUser?.loginId ?? <span className="text-slate-300">—</span>}
                 </td>
                 <td className="px-4 py-2.5 text-right tabular-nums text-slate-700">
                   {adj.adjustmentLines.length}

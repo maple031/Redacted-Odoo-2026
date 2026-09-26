@@ -117,7 +117,7 @@ export default function TransferDetailPage() {
           <Field label="Warehouse"            value={op.referenceWarehouse.name} />
           <Field label="Source Location"      value={sourceLoc} />
           <Field label="Destination Location" value={destLoc} />
-          <Field label="Responsible"          value={op.responsibleUser?.name} />
+          <Field label="Responsible"          value={op.responsibleUser?.loginId} />
           <Field
             label="Scheduled Date"
             value={op.scheduledAt

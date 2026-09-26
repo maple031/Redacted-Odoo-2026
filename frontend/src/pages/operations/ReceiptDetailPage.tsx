@@ -113,7 +113,7 @@ export default function ReceiptDetailPage() {
           </div>
           <Field label="Receive From"   value={op.partner?.name} />
           <Field label="Warehouse"      value={op.referenceWarehouse.name} />
-          <Field label="Responsible"    value={op.responsibleUser?.name} />
+          <Field label="Responsible"    value={op.responsibleUser?.loginId} />
           <Field label="Scheduled Date"
             value={op.scheduledAt
               ? new Date(op.scheduledAt).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" })
