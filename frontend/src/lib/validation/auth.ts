@@ -37,13 +37,21 @@ export type SignupFormValues = z.infer<typeof signupSchema>
 
 // ── Forgot Password ───────────────────────────────────────────────────────────
 export const forgotPasswordSchema = z.object({
-  email: z.string().email('Enter a valid email address'),
+  emailOrLoginId: z.string().min(1, 'Email or Login ID is required').refine(
+    (val) => {
+      const isEmail = z.string().email().safeParse(val).success
+      const isLoginId = val.length >= 6 && val.length <= 12
+      return isEmail || isLoginId
+    },
+    { message: 'Must be a valid email or a 6–12 character Login ID' }
+  ),
 })
 export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>
 
 // ── Reset Password ────────────────────────────────────────────────────────────
 export const resetPasswordSchema = z
   .object({
+    resetCode: z.string().min(1, 'Reset code is required'),
     newPassword: passwordSchema,
     confirmPassword: z.string().min(1, 'Please re-enter your new password'),
   })
