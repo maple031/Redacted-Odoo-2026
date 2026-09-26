@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Eye, EyeOff, Loader2, KeyRound } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,11 +9,17 @@ import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import AuthLayout from './AuthLayout'
 import { resetPasswordSchema, type ResetPasswordFormValues } from '@/lib/validation/auth'
+import { resetPasswordApi } from '@/lib/api/auth'
 
-type UIState = 'idle' | 'submitting' | 'success'
+type UIState = 'idle' | 'submitting' | 'success' | 'error'
 
 export default function ResetPasswordPage() {
+  const [searchParams] = useSearchParams()
+  const initialIdentifier = searchParams.get('identifier') || ''
+
   const [uiState, setUiState] = useState<UIState>('idle')
+  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [emailOrLoginId, setEmailOrLoginId] = useState<string>(initialIdentifier)
   const [showNew, setShowNew] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
@@ -23,26 +29,41 @@ export default function ResetPasswordPage() {
     formState: { errors },
   } = useForm<ResetPasswordFormValues>({ resolver: zodResolver(resetPasswordSchema) })
 
-  const onSubmit = async (_data: ResetPasswordFormValues) => {
+  const onSubmit = async (data: ResetPasswordFormValues) => {
+    if (!emailOrLoginId.trim()) {
+      setErrorMessage('Please enter your Email or Login ID.')
+      setUiState('error')
+      return
+    }
+
     setUiState('submitting')
-    await new Promise((r) => setTimeout(r, 800))
-    setUiState('success')
+    setErrorMessage('')
+    try {
+      await resetPasswordApi({
+        ...data,
+        emailOrLoginId: emailOrLoginId.trim(),
+      })
+      setUiState('success')
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Invalid or expired reset code')
+      setUiState('error')
+    }
   }
 
   if (uiState === 'success') {
     return (
       <AuthLayout
-        title="Password reset"
-        subtitle="Your password has been changed successfully."
+        title="Password reset successful"
+        subtitle="Your password has been changed successfully in the database."
       >
         <div className="flex flex-col items-center justify-center py-6 text-center space-y-4">
           <div className="w-12 h-12 rounded-full bg-[--success-bg,#F0FDF4] border border-[--success-border,#BBF7D0] flex items-center justify-center">
             <KeyRound className="w-6 h-6 text-[--success,#15803D]" />
           </div>
           <div className="space-y-1">
-            <p className="text-sm text-foreground font-medium">Demo only</p>
+            <p className="text-sm text-foreground font-medium">Password updated!</p>
             <p className="text-sm text-muted-foreground">
-              Password was not actually changed in the backend.
+              You may now sign in with your new password.
             </p>
           </div>
           <Button asChild className="mt-4 w-full">
@@ -66,6 +87,35 @@ export default function ResetPasswordPage() {
         noValidate
         className="space-y-5"
       >
+        {/* ── Error notice ─────────────────────────────────── */}
+        {uiState === 'error' && (
+          <div
+            role="alert"
+            aria-live="assertive"
+            className="flex items-start gap-2.5 rounded-md border border-[--danger-border,#FECACA] bg-[--danger-bg,#FEF2F2] px-3.5 py-3"
+          >
+            <span
+              className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-[--danger,#B91C1C]"
+              aria-hidden="true"
+            />
+            <p className="text-sm text-[--danger,#B91C1C]">
+              {errorMessage}
+            </p>
+          </div>
+        )}
+
+        {/* ── Email or Login ID ──────────────────────────────────────────── */}
+        <div className="space-y-1.5">
+          <Label htmlFor="reset-identifier">Email or Login ID</Label>
+          <Input
+            id="reset-identifier"
+            type="text"
+            placeholder="Enter your Email or Login ID"
+            value={emailOrLoginId}
+            onChange={(e) => setEmailOrLoginId(e.target.value)}
+          />
+        </div>
+
         {/* ── Reset Code ────────────────────────────────────────────────── */}
         <div className="space-y-1.5">
           <Label htmlFor="reset-code">Reset Code</Label>

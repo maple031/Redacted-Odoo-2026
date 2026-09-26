@@ -9,11 +9,13 @@ import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import AuthLayout from './AuthLayout'
 import { signupSchema, type SignupFormValues } from '@/lib/validation/auth'
+import { signupApi } from '@/lib/api/auth'
 
-type UIState = 'idle' | 'submitting' | 'success'
+type UIState = 'idle' | 'submitting' | 'success' | 'error'
 
 export default function SignupPage() {
   const [uiState, setUiState] = useState<UIState>('idle')
+  const [errorMessage, setErrorMessage] = useState<string>('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
@@ -23,10 +25,16 @@ export default function SignupPage() {
     formState: { errors },
   } = useForm<SignupFormValues>({ resolver: zodResolver(signupSchema) })
 
-  const onSubmit = async (_data: SignupFormValues) => {
+  const onSubmit = async (data: SignupFormValues) => {
     setUiState('submitting')
-    await new Promise((r) => setTimeout(r, 800))
-    setUiState('success')
+    setErrorMessage('')
+    try {
+      await signupApi(data)
+      setUiState('success')
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Signup failed. Please try again.')
+      setUiState('error')
+    }
   }
 
   if (uiState === 'success') {
@@ -40,14 +48,14 @@ export default function SignupPage() {
             <CheckCircle2 className="w-6 h-6 text-[--success,#15803D]" />
           </div>
           <div className="space-y-1">
-            <p className="text-sm text-foreground font-medium">Demo only</p>
+            <p className="text-sm text-foreground font-medium">Registration successful!</p>
             <p className="text-sm text-muted-foreground">
-              Account creation is not connected to a backend database in this environment.
+              Your account has been created in the database. You can now sign in with your credentials.
             </p>
           </div>
           <Button asChild className="mt-4 w-full">
             <Link to="/login" id="signup-goto-login">
-              Return to sign in
+              Sign in to your account
             </Link>
           </Button>
         </div>
@@ -66,6 +74,22 @@ export default function SignupPage() {
         noValidate
         className="space-y-5"
       >
+        {/* ── Error notice ─────────────────────────────────── */}
+        {uiState === 'error' && (
+          <div
+            role="alert"
+            aria-live="assertive"
+            className="flex items-start gap-2.5 rounded-md border border-[--danger-border,#FECACA] bg-[--danger-bg,#FEF2F2] px-3.5 py-3"
+          >
+            <span
+              className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-[--danger,#B91C1C]"
+              aria-hidden="true"
+            />
+            <p className="text-sm text-[--danger,#B91C1C]">
+              {errorMessage}
+            </p>
+          </div>
+        )}
         {/* ── Login ID ──────────────────────────────────────────────────── */}
         <div className="space-y-1.5">
           <Label htmlFor="signup-id">Login ID</Label>

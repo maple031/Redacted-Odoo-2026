@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import AuthLayout from './AuthLayout'
 import { forgotPasswordSchema, type ForgotPasswordFormValues } from '@/lib/validation/auth'
+import { forgotPasswordApi } from '@/lib/api/auth'
 
 type UIState = 'idle' | 'submitting' | 'success'
 
@@ -22,17 +23,22 @@ export default function ForgotPasswordPage() {
     formState: { errors },
   } = useForm<ForgotPasswordFormValues>({ resolver: zodResolver(forgotPasswordSchema) })
 
-  const onSubmit = async (_data: ForgotPasswordFormValues) => {
+  const onSubmit = async (data: ForgotPasswordFormValues) => {
     setUiState('submitting')
-    await new Promise((r) => setTimeout(r, 800))
-    setUiState('success')
+    try {
+      await forgotPasswordApi(data)
+    } catch (_err) {
+      // Do not reveal error details to protect against enumeration
+    } finally {
+      setUiState('success')
+    }
   }
 
   if (uiState === 'success') {
     return (
       <AuthLayout
-        title="Check your email"
-        subtitle="We have sent password reset instructions."
+        title="Reset request received"
+        subtitle="We have processed your password reset request."
       >
         <div className="flex flex-col items-center justify-center py-6 text-center space-y-4">
           <div className="w-12 h-12 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center">
@@ -40,15 +46,12 @@ export default function ForgotPasswordPage() {
           </div>
           <div className="space-y-1">
             <p className="text-sm text-foreground">
-              An email was sent to <span className="font-semibold">{getValues('emailOrLoginId')}</span>.
-            </p>
-            <p className="text-xs text-muted-foreground bg-muted/30 p-2 rounded border border-border mt-2">
-              🔒 <strong>Demo only</strong>: No real email was sent.
+              If an account exists for <span className="font-semibold">{getValues('emailOrLoginId')}</span>, a reset challenge has been generated.
             </p>
           </div>
           <Button asChild className="mt-4 w-full">
-            <Link to="/reset-password" id="forgot-goto-reset">
-              Simulate clicking reset link
+            <Link to={`/reset-password?identifier=${encodeURIComponent(getValues('emailOrLoginId'))}`} id="forgot-goto-reset">
+              Proceed to enter reset code
             </Link>
           </Button>
           <Link

@@ -2,28 +2,24 @@ package com.stocksense.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * Spring Security configuration.
  *
- * <p>Policy:
- * <ul>
- *   <li>Unauthenticated access is permitted <em>only</em> for the paths listed below.</li>
- *   <li>Every other request requires authentication by default.</li>
- *   <li>CSRF is left in its <strong>default state</strong> (enabled).
- *       It will be addressed properly when the authentication flow is implemented
- *       on a dedicated feature branch.</li>
- * </ul>
- *
  * <p>Permitted paths (no auth required):
  * <ul>
- *   <li>{@code /api/health} — application health check consumed by the frontend.</li>
- *   <li>{@code /actuator/health} — Actuator health for Docker / orchestration checks.</li>
- *   <li>{@code /swagger-ui/**} and {@code /swagger-ui.html} — Swagger UI assets.</li>
- *   <li>{@code /v3/api-docs/**} — OpenAPI specification endpoint.</li>
+ *   <li>{@code /api/auth/**} — signup, login, me, logout, forgot/reset password.</li>
+ *   <li>{@code /api/health} — application health check.</li>
+ *   <li>{@code /actuator/health} — Actuator health checks.</li>
+ *   <li>{@code /swagger-ui/**} and {@code /swagger-ui.html} — Swagger UI.</li>
+ *   <li>{@code /v3/api-docs/**} — OpenAPI specification.</li>
  * </ul>
  */
 @Configuration
@@ -31,19 +27,31 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                        "/api/health",
-                        "/actuator/health",
-                        "/swagger-ui/**",
-                        "/swagger-ui.html",
-                        "/v3/api-docs/**"
-                ).permitAll()
-                .anyRequest().authenticated()
-        );
-        // CSRF intentionally left in default state (enabled).
-        // Real CSRF handling will be wired when authentication is implemented.
+        http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/api/health",
+                                "/actuator/health",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                );
         return http.build();
     }
 }
+
