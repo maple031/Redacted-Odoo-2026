@@ -12,6 +12,9 @@ target/
 node_modules/
 dist/
 .vite/
+*.tsbuildinfo
+vite.config.d.ts
+vite.config.js
 # bun.lock IS committed — do NOT ignore it
 package-lock.json
 yarn.lock
