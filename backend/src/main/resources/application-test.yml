@@ -1,0 +1,10 @@
+# Test profile — active during integration tests (@ActiveProfiles("test")).
+#
+# NO datasource URL is configured here.
+# The PostgreSQL connection details (URL, username, password) are supplied
+# dynamically at test runtime by Testcontainers via @ServiceConnection,
+# which registers a ConnectionDetails bean before Spring's datasource
+# auto-configuration runs.  Nothing is hardcoded.
+spring:
+  flyway:
+    enabled: true   # Flyway runs migrations against the Testcontainers database.

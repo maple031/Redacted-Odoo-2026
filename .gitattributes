@@ -1,0 +1,8 @@
+# Normalise line endings to LF in the repository; Git will convert on checkout.
+* text=auto eol=lf
+
+# Binary files — do not touch line endings.
+*.png binary
+*.jpg binary
+*.ico binary
+bun.lock text eol=lf
