@@ -8,7 +8,7 @@ import type { OperationStatus } from "@/features/operations/types";
 
 import OperationPageHeader from "@/components/operations/OperationPageHeader";
 import OperationFilters from "@/components/operations/OperationFilters";
-import StatusBadge from "@/components/operations/StatusBadge";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 
 const DETAIL_BASE = "/operations/adjustments";
 

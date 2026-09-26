@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import type { InventoryOperation } from "@/features/operations/types";
-import StatusBadge from "./StatusBadge";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 
 interface Props {
   operations: InventoryOperation[];

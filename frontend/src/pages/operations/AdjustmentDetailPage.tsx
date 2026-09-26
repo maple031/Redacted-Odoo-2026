@@ -7,7 +7,7 @@ import type { AdjustmentReasonCode } from "@/features/operations/types";
 
 import OperationPageHeader from "@/components/operations/OperationPageHeader";
 import StatusPipeline from "@/components/operations/StatusPipeline";
-import StatusBadge from "@/components/operations/StatusBadge";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 import { cn } from "@/lib/utils";
 
 const REASON_LABELS: Record<AdjustmentReasonCode, string> = {
