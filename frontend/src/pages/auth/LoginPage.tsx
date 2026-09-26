@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import AuthLayout from './AuthLayout'
+import { useAuth } from '@/lib/auth/AuthContext'
 import { loginSchema, type LoginFormValues } from '@/lib/validation/auth'
 import { loginApi } from '@/lib/api/auth'
 
@@ -15,6 +16,7 @@ type UIState = 'idle' | 'submitting' | 'invalid'
 
 export default function LoginPage() {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [uiState, setUiState] = useState<UIState>('idle')
   const [errorMessage, setErrorMessage] = useState<string>('Invalid Login Id or Password')
   const [showPassword, setShowPassword] = useState(false)
@@ -28,7 +30,8 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormValues) => {
     setUiState('submitting')
     try {
-      await loginApi(data)
+      const user = await loginApi(data)
+      login(user)
       navigate('/')
     } catch (err: any) {
       setErrorMessage(err.message || 'Invalid Login Id or Password')
