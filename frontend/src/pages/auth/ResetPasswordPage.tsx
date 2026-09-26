@@ -66,6 +66,26 @@ export default function ResetPasswordPage() {
         noValidate
         className="space-y-5"
       >
+        {/* ── Reset Code ────────────────────────────────────────────────── */}
+        <div className="space-y-1.5">
+          <Label htmlFor="reset-code">Reset Code</Label>
+          <Input
+            id="reset-code"
+            type="text"
+            autoComplete="off"
+            placeholder="Enter the reset code from your email"
+            aria-invalid={!!errors.resetCode}
+            aria-describedby={errors.resetCode ? 'reset-code-error' : undefined}
+            className={cn(errors.resetCode && 'border-[--danger,#B91C1C] focus-visible:ring-[--danger,#B91C1C]')}
+            {...register('resetCode')}
+          />
+          {errors.resetCode && (
+            <p id="reset-code-error" role="alert" className="text-xs text-[--danger,#B91C1C]">
+              {errors.resetCode.message}
+            </p>
+          )}
+        </div>
+
         {/* ── New Password ──────────────────────────────────────────────── */}
         <div className="space-y-1.5">
           <Label htmlFor="reset-new">New Password</Label>
