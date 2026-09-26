@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
           </div>
           <div className="space-y-1">
             <p className="text-sm text-foreground">
-              An email was sent to <span className="font-semibold">{getValues('email')}</span>.
+              An email was sent to <span className="font-semibold">{getValues('emailOrLoginId')}</span>.
             </p>
             <p className="text-xs text-muted-foreground bg-muted/30 p-2 rounded border border-border mt-2">
               🔒 <strong>Demo only</strong>: No real email was sent.
@@ -65,7 +65,7 @@ export default function ForgotPasswordPage() {
   return (
     <AuthLayout
       title="Forgot password?"
-      subtitle="Enter your email address and we will send you instructions to reset your password."
+      subtitle="Enter your Email or Login ID and we will send you instructions to reset your password."
     >
       <form
         id="forgot-password-form"
@@ -73,22 +73,22 @@ export default function ForgotPasswordPage() {
         noValidate
         className="space-y-5"
       >
-        {/* ── Email ─────────────────────────────────────────────────────── */}
+        {/* ── Email or Login ID ─────────────────────────────────────────── */}
         <div className="space-y-1.5">
-          <Label htmlFor="forgot-email">Email address</Label>
+          <Label htmlFor="forgot-email">Email or Login ID</Label>
           <Input
             id="forgot-email"
-            type="email"
-            autoComplete="email"
-            placeholder="you@example.com"
-            aria-invalid={!!errors.email}
-            aria-describedby={errors.email ? 'forgot-email-error' : undefined}
-            className={cn(errors.email && 'border-[--danger,#B91C1C] focus-visible:ring-[--danger,#B91C1C]')}
-            {...register('email')}
+            type="text"
+            autoComplete="username"
+            placeholder="you@example.com or 6-12 char ID"
+            aria-invalid={!!errors.emailOrLoginId}
+            aria-describedby={errors.emailOrLoginId ? 'forgot-email-error' : undefined}
+            className={cn(errors.emailOrLoginId && 'border-[--danger,#B91C1C] focus-visible:ring-[--danger,#B91C1C]')}
+            {...register('emailOrLoginId')}
           />
-          {errors.email && (
+          {errors.emailOrLoginId && (
             <p id="forgot-email-error" role="alert" className="text-xs text-[--danger,#B91C1C]">
-              {errors.email.message}
+              {errors.emailOrLoginId.message}
             </p>
           )}
         </div>
