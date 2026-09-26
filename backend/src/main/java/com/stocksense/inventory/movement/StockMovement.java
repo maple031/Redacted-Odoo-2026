@@ -56,7 +56,7 @@ public class StockMovement {
 
     // ── Constructors ──────────────────────────────────────────────────────────
 
-    protected StockMovement() {}
+    public StockMovement() {}
 
     // ── Accessors ─────────────────────────────────────────────────────────────
 

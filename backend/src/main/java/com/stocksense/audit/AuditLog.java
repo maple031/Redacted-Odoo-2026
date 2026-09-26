@@ -71,7 +71,7 @@ public class AuditLog {
 
     // ── Constructors ──────────────────────────────────────────────────────────
 
-    protected AuditLog() {}
+    public AuditLog() {}
 
     // ── Accessors ─────────────────────────────────────────────────────────────
 

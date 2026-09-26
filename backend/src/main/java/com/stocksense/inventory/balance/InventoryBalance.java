@@ -61,7 +61,7 @@ public class InventoryBalance {
 
     // ── Constructors ──────────────────────────────────────────────────────────
 
-    protected InventoryBalance() {}
+    public InventoryBalance() {}
 
     // ── Accessors ─────────────────────────────────────────────────────────────
 

@@ -59,7 +59,7 @@ public class OperationLine {
 
     // ── Constructors ──────────────────────────────────────────────────────────
 
-    protected OperationLine() {}
+    public OperationLine() {}
 
     // ── Accessors ─────────────────────────────────────────────────────────────
 

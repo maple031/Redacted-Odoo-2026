@@ -46,7 +46,7 @@ public class Reservation {
 
     // ── Constructors ──────────────────────────────────────────────────────────
 
-    protected Reservation() {}
+    public Reservation() {}
 
     // ── Accessors ─────────────────────────────────────────────────────────────
 

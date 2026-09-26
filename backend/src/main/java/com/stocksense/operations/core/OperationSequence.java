@@ -43,7 +43,7 @@ public class OperationSequence {
 
     // ── Constructors ──────────────────────────────────────────────────────────
 
-    protected OperationSequence() {}
+    public OperationSequence() {}
 
     // ── Accessors ─────────────────────────────────────────────────────────────
 

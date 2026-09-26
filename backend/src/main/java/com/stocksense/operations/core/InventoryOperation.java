@@ -83,7 +83,7 @@ public class InventoryOperation {
 
     // ── Constructors ──────────────────────────────────────────────────────────
 
-    protected InventoryOperation() {}
+    public InventoryOperation() {}
 
     // ── Accessors ─────────────────────────────────────────────────────────────
 
