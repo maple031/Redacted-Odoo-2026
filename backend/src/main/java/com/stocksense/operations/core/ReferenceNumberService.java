@@ -10,9 +10,9 @@ import java.util.UUID;
 /**
  * Service responsible for generating sequential reference numbers for inventory operations.
  * <p>
- * This service executes in a REQUIRES_NEW transaction to ensure that sequence increments
- * are not rolled back if the main operation transaction fails (e.g., due to a validation
- * error). This prevents sequence gaps.
+ * This service executes within the caller's transaction to ensure that sequence increments
+ * are rolled back if the main operation transaction fails, preventing reference-number gaps
+ * but safely avoiding duplicate sequences through pessimistic locking.
  */
 @Service
 public class ReferenceNumberService {
@@ -37,17 +37,19 @@ public class ReferenceNumberService {
      * @param operationType the type of operation
      * @return the generated reference code
      */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public String generateReferenceNumber(UUID warehouseId, OperationType operationType) {
+        // Ensure the sequence exists before locking it
+        jdbcTemplate.update(
+                "INSERT INTO operation_sequence (id, warehouse_id, operation_type, next_value) " +
+                "VALUES (gen_random_uuid(), ?, ?, 1) " +
+                "ON CONFLICT ON CONSTRAINT operation_sequence_warehouse_type_unique DO NOTHING",
+                warehouseId, operationType.name()
+        );
+
         OperationSequence sequence = sequenceRepository
                 .findByWarehouseIdAndOperationTypeForUpdate(warehouseId, operationType)
-                .orElseGet(() -> {
-                    OperationSequence newSeq = new OperationSequence();
-                    newSeq.setWarehouseId(warehouseId);
-                    newSeq.setOperationType(operationType);
-                    newSeq.setNextValue(1L);
-                    return sequenceRepository.save(newSeq);
-                });
+                .orElseThrow(() -> new IllegalStateException("Sequence missing after upsert"));
 
         long currentVal = sequence.getNextValue();
         sequence.setNextValue(currentVal + 1);
@@ -55,9 +57,16 @@ public class ReferenceNumberService {
 
         String warehouseCode = fetchWarehouseShortCode(warehouseId);
         
+        String typeCode = switch (operationType) {
+            case RECEIPT -> "IN";
+            case DELIVERY -> "OUT";
+            case TRANSFER -> "INT";
+            case ADJUSTMENT -> "ADJ";
+        };
+        
         return String.format("%s/%s/%05d",
                 warehouseCode,
-                operationType.name(),
+                typeCode,
                 currentVal);
     }
 

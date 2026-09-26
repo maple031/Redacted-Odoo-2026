@@ -42,7 +42,7 @@ public class InventoryAdjustmentDetail {
 
     // ── Constructors ──────────────────────────────────────────────────────────
 
-    protected InventoryAdjustmentDetail() {}
+    public InventoryAdjustmentDetail() {}
 
     // ── Accessors ─────────────────────────────────────────────────────────────
 

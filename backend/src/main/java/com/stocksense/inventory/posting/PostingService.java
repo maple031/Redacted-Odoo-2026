@@ -10,9 +10,12 @@ import com.stocksense.inventory.reservation.ReservationStatus;
 import com.stocksense.operations.core.InventoryOperation;
 import com.stocksense.operations.core.OperationLine;
 import com.stocksense.operations.core.OperationStatus;
+import com.stocksense.operations.core.OperationType;
 import com.stocksense.operations.core.OperationTransitionGuard;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -32,15 +35,18 @@ public class PostingService {
     private final StockMovementRepository movementRepository;
     private final ReservationRepository reservationRepository;
     private final OperationTransitionGuard transitionGuard;
+    private final JdbcTemplate jdbcTemplate;
 
     public PostingService(InventoryBalanceRepository balanceRepository,
                           StockMovementRepository movementRepository,
                           ReservationRepository reservationRepository,
-                          OperationTransitionGuard transitionGuard) {
+                          OperationTransitionGuard transitionGuard,
+                          JdbcTemplate jdbcTemplate) {
         this.balanceRepository = balanceRepository;
         this.movementRepository = movementRepository;
         this.reservationRepository = reservationRepository;
         this.transitionGuard = transitionGuard;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     /**
@@ -50,7 +56,7 @@ public class PostingService {
      * @param lines         the lines belonging to the operation
      * @param currentUserId the ID of the user executing the post
      */
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED, rollbackFor = Exception.class)
     public void postOperation(InventoryOperation operation, List<OperationLine> lines, UUID currentUserId) {
         transitionGuard.validateTransition(operation.getStatus(), OperationStatus.DONE);
         operation.setStatus(OperationStatus.DONE);
@@ -66,7 +72,7 @@ public class PostingService {
             UUID destLocationId = line.getDestinationLocationId();
 
             // 1. Process Source Location (Deduction & Reservation Consumption)
-            if (srcLocationId != null) {
+            if (srcLocationId != null && isInternalLocation(srcLocationId)) {
                 balanceRepository.upsertIfMissing(productId, srcLocationId);
                 InventoryBalance srcBalance = balanceRepository.findByProductIdAndLocationIdForUpdate(productId, srcLocationId)
                         .orElseThrow(() -> new IllegalStateException("Missing source balance"));
@@ -89,15 +95,17 @@ public class PostingService {
                 }
                 srcBalance.setReservedQty(newReservedQty);
                 
-                // Verify we don't go negative on available stock
-                if (srcBalance.getOnHandQty().subtract(srcBalance.getReservedQty()).compareTo(BigDecimal.ZERO) < 0) {
-                    throw new IllegalStateException("Insufficient stock at source location to post line " + line.getId());
+                // Verify we don't go negative on available stock for outbound/internal moves
+                if (operation.getOperationType() == OperationType.DELIVERY || operation.getOperationType() == OperationType.TRANSFER) {
+                    if (srcBalance.getOnHandQty().subtract(srcBalance.getReservedQty()).compareTo(BigDecimal.ZERO) < 0) {
+                        throw new IllegalStateException("Insufficient stock at source location to post line " + line.getId());
+                    }
                 }
                 balanceRepository.save(srcBalance);
             }
 
             // 2. Process Destination Location (Addition)
-            if (destLocationId != null) {
+            if (destLocationId != null && isInternalLocation(destLocationId)) {
                 balanceRepository.upsertIfMissing(productId, destLocationId);
                 InventoryBalance destBalance = balanceRepository.findByProductIdAndLocationIdForUpdate(productId, destLocationId)
                         .orElseThrow(() -> new IllegalStateException("Missing destination balance"));
@@ -116,6 +124,19 @@ public class PostingService {
             movement.setQty(qty);
             movement.setCreatedByUserId(currentUserId);
             movementRepository.save(movement);
+        }
+    }
+
+    private boolean isInternalLocation(UUID locationId) {
+        try {
+            String locationType = jdbcTemplate.queryForObject(
+                    "SELECT location_type FROM location WHERE id = ?",
+                    String.class,
+                    locationId
+            );
+            return "INTERNAL".equals(locationType);
+        } catch (EmptyResultDataAccessException e) {
+            return false;
         }
     }
 }
