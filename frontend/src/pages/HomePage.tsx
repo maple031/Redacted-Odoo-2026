@@ -1,4 +1,4 @@
-import { useHealth } from '../hooks/useHealth'
+import { useHealth } from '../features/health/useHealth'
 
 export default function HomePage() {
   const { data, isPending, isError, error } = useHealth()
