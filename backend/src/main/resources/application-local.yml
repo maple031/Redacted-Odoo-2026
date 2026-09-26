@@ -1,0 +1,8 @@
+# Local profile — used when SPRING_PROFILES_ACTIVE=local (Docker Compose or local dev).
+# Values are read from environment variables so no credentials are hardcoded.
+spring:
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:stocksense}
+    username: ${POSTGRES_USER:stocksense}
+    password: ${POSTGRES_PASSWORD:changeme_secret}
+    driver-class-name: org.postgresql.Driver
