@@ -45,7 +45,7 @@ export default function DeliveryDetailPage() {
   const deliveryAddress = DELIVERY_ADDRESSES[op.id] ?? "Address not recorded";
 
   const handleValidate = () => alert(`[MOCK] Validate ${op.referenceCode}`);
-  const handlePrint    = () => alert(`[MOCK] Print ${op.referenceCode}`);
+  const handlePrint    = () => window.print();
   const handleCancel   = () => alert(`[MOCK] Cancel ${op.referenceCode}`);
 
   const isDone      = op.status === "DONE";
@@ -60,7 +60,7 @@ export default function DeliveryDetailPage() {
           <button
             id="delivery-back"
             onClick={() => navigate("/operations/deliveries")}
-            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700"
+            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 print:hidden"
           >
             <ArrowLeft className="w-4 h-4" />
             Back
@@ -69,13 +69,13 @@ export default function DeliveryDetailPage() {
       />
 
       {/* Status pipeline */}
-      <div className="mb-6">
+      <div className="mb-6 print:hidden">
         <StatusPipeline operationType="DELIVERY" status={op.status} />
       </div>
 
       {/* Action bar */}
       {!isDone && !isCancelled && (
-        <div className="flex items-center gap-2 mb-6">
+        <div className="flex items-center gap-2 mb-6 print:hidden">
           <button
             id="delivery-validate"
             onClick={handleValidate}
@@ -103,7 +103,7 @@ export default function DeliveryDetailPage() {
         </div>
       )}
       {isDone && (
-        <div className="flex items-center gap-2 mb-6">
+        <div className="flex items-center gap-2 mb-6 print:hidden">
           <button
             id="delivery-print-done"
             onClick={handlePrint}

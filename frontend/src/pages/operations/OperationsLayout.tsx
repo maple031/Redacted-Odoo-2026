@@ -15,9 +15,9 @@ const NAV_ITEMS = [
 
 export default function OperationsLayout() {
   return (
-    <div className="min-h-screen flex bg-slate-50">
+    <div className="min-h-screen flex bg-slate-50 print:bg-white print:block print:min-h-0">
       {/* ── Sidebar ── */}
-      <aside className="w-52 shrink-0 border-r border-slate-200 bg-white flex flex-col">
+      <aside className="w-52 shrink-0 border-r border-slate-200 bg-white flex flex-col print:hidden">
         {/* Brand strip */}
         <div className="px-4 py-3.5 border-b border-slate-200 flex items-center gap-2">
           <div className="w-5 h-5 bg-brand-500 rounded" aria-hidden="true" />
@@ -66,8 +66,8 @@ export default function OperationsLayout() {
       </aside>
 
       {/* ── Main content ── */}
-      <main className="flex-1 overflow-auto">
-        <div className="max-w-[1400px] mx-auto px-6 py-6">
+      <main className="flex-1 overflow-auto print:overflow-visible">
+        <div className="max-w-[1400px] mx-auto px-6 py-6 print:p-0 print:max-w-full print:m-0">
           <Outlet />
         </div>
       </main>

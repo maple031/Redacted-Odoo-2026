@@ -21,8 +21,10 @@ export default function ReceiptsPage() {
     contact: "",
   });
 
+  const [operations, setOperations] = useState(MOCK_RECEIPTS);
+
   const filtered = useMemo(() => {
-    return MOCK_RECEIPTS.filter((op) => {
+    return operations.filter((op) => {
       const refMatch = op.referenceCode
         .toLowerCase()
         .includes(filters.reference.toLowerCase());
@@ -31,7 +33,13 @@ export default function ReceiptsPage() {
         op.partner?.name.toLowerCase().includes(filters.contact.toLowerCase());
       return refMatch && contactMatch;
     });
-  }, [filters]);
+  }, [filters, operations]);
+
+  const handleStatusChange = (operationId: string, newStatus: any) => {
+    setOperations((prev) =>
+      prev.map((op) => (op.id === operationId ? { ...op, status: newStatus } : op))
+    );
+  };
 
   return (
     <div>
@@ -74,6 +82,7 @@ export default function ReceiptsPage() {
               operations={filtered}
               operationType="RECEIPT"
               detailBasePath={DETAIL_BASE}
+              onStatusChange={handleStatusChange}
             />
           </div>
         )}

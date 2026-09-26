@@ -1,3 +1,4 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import type { InventoryOperation } from "@/features/operations/types";
 import { StatusBadge } from "@/components/ui/StatusBadge";
@@ -18,10 +19,26 @@ export function OperationCard({ operation: op, detailBasePath }: CardProps) {
       ? `${firstSrc} → ${firstDest}`
       : firstSrc ?? firstDest ?? op.referenceWarehouse.name;
 
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+    e.dataTransfer.setData("application/json", JSON.stringify({ id: op.id, currentStatus: op.status }));
+    e.dataTransfer.effectAllowed = "move";
+    // Slightly fade the card while dragging
+    setTimeout(() => {
+      (e.target as HTMLElement).style.opacity = "0.5";
+    }, 0);
+  };
+
+  const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
+    (e.target as HTMLElement).style.opacity = "1";
+  };
+
   return (
     <div
+      draggable
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       onClick={() => navigate(`${detailBasePath}/${op.id}`)}
-      className="bg-white border border-slate-200 rounded-md p-3 cursor-pointer hover:shadow-sm hover:border-slate-300 transition-all"
+      className="bg-white border border-slate-200 rounded-md p-3 cursor-grab hover:shadow-sm hover:border-slate-300 transition-all active:cursor-grabbing"
       role="button"
       aria-label={`Open ${op.referenceCode}`}
     >
@@ -72,6 +89,8 @@ interface ColumnProps {
   count: number;
   operations: InventoryOperation[];
   detailBasePath: string;
+  status: OperationStatus;
+  onDrop: (operationId: string, newStatus: OperationStatus) => void;
 }
 
 export function OperationKanbanColumn({
@@ -79,10 +98,46 @@ export function OperationKanbanColumn({
   count,
   operations,
   detailBasePath,
+  status,
+  onDrop,
 }: ColumnProps) {
+  const [isDragOver, setIsDragOver] = React.useState(false);
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault(); // Necessary to allow dropping
+    e.dataTransfer.dropEffect = "move";
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    try {
+      const data = JSON.parse(e.dataTransfer.getData("application/json"));
+      if (data && data.id && data.currentStatus !== status) {
+        onDrop(data.id, status);
+      }
+    } catch (err) {
+      // Ignore if data is not our JSON
+    }
+  };
+
   return (
     // NO coloured column backgrounds — plain neutral bg per spec
-    <div className="flex flex-col min-w-[220px] w-56 shrink-0">
+    <div
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      className={`flex flex-col min-w-[220px] w-56 shrink-0 rounded-md transition-colors ${
+        isDragOver ? "bg-slate-50 ring-2 ring-brand-200" : ""
+      }`}
+    >
       {/* Column header */}
       <div className="flex items-center justify-between mb-2 px-1">
         <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
@@ -94,9 +149,9 @@ export function OperationKanbanColumn({
       </div>
 
       {/* Cards */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 flex-1 min-h-[100px]">
         {operations.length === 0 && (
-          <div className="border border-dashed border-slate-200 rounded-md py-6 text-center text-xs text-slate-300">
+          <div className="border border-dashed border-slate-200 rounded-md py-6 text-center text-xs text-slate-300 pointer-events-none">
             Empty
           </div>
         )}
@@ -133,14 +188,23 @@ interface BoardProps {
   operations: InventoryOperation[];
   operationType: OperationType;
   detailBasePath: string;
+  onStatusChange?: (operationId: string, newStatus: OperationStatus) => void;
 }
 
 export default function OperationKanban({
   operations,
   operationType,
   detailBasePath,
+  onStatusChange,
 }: BoardProps) {
   const statuses = PIPELINE_STATUSES[operationType];
+
+  const handleDrop = (operationId: string, newStatus: OperationStatus) => {
+    // Basic validation: Is the status valid for this operation type?
+    if (statuses.includes(newStatus) && onStatusChange) {
+      onStatusChange(operationId, newStatus);
+    }
+  };
 
   return (
     <div className="flex gap-4 overflow-x-auto pb-4">
@@ -149,10 +213,12 @@ export default function OperationKanban({
         return (
           <OperationKanbanColumn
             key={status}
+            status={status}
             title={STATUS_LABEL[status] ?? status}
             count={cols.length}
             operations={cols}
             detailBasePath={detailBasePath}
+            onDrop={handleDrop}
           />
         );
       })}

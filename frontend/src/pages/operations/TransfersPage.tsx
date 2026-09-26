@@ -22,11 +22,19 @@ export default function TransfersPage() {
     contact: "",
   });
 
+  const [operations, setOperations] = useState(MOCK_TRANSFERS);
+
   const filtered = useMemo(() => {
-    return MOCK_TRANSFERS.filter((op) =>
+    return operations.filter((op) =>
       op.referenceCode.toLowerCase().includes(filters.reference.toLowerCase())
     );
-  }, [filters.reference]);
+  }, [filters.reference, operations]);
+
+  const handleStatusChange = (operationId: string, newStatus: any) => {
+    setOperations((prev) =>
+      prev.map((op) => (op.id === operationId ? { ...op, status: newStatus } : op))
+    );
+  };
 
   return (
     <div>
@@ -71,6 +79,7 @@ export default function TransfersPage() {
               operations={filtered}
               operationType="TRANSFER"
               detailBasePath={DETAIL_BASE}
+              onStatusChange={handleStatusChange}
             />
           </div>
         )}
