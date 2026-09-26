@@ -58,6 +58,11 @@ public class PostingService {
      */
     @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED, rollbackFor = Exception.class)
     public void postOperation(InventoryOperation operation, List<OperationLine> lines, UUID currentUserId) {
+        if (operation.getStatus() == OperationStatus.DONE) {
+            // Idempotency: return harmless already-completed result
+            return;
+        }
+        
         transitionGuard.validateTransition(operation.getStatus(), OperationStatus.DONE);
         operation.setStatus(OperationStatus.DONE);
         
@@ -136,7 +141,7 @@ public class PostingService {
             );
             return "INTERNAL".equals(locationType);
         } catch (EmptyResultDataAccessException e) {
-            return false;
+            throw new IllegalArgumentException("Location not found: " + locationId);
         }
     }
 }

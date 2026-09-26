@@ -29,9 +29,9 @@ public class ReferenceNumberService {
     /**
      * Generates a new reference number for the given warehouse and operation type.
      * <p>
-     * Format: {@code [WAREHOUSE_SHORT_CODE]/[OPERATION_TYPE]/[SEQUENCE_VALUE]}
+     * Format: {@code [WAREHOUSE_SHORT_CODE]/[TYPE_CODE]/[SEQUENCE_VALUE]}
      * <br>
-     * Example: {@code WH/RECEIPT/00005}
+     * Example: {@code HYD/IN/00001}
      *
      * @param warehouseId   the ID of the warehouse (FK to A's domain)
      * @param operationType the type of operation

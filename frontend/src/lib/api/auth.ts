@@ -18,13 +18,26 @@ export interface ApiError {
   message?: string
 }
 
+function getCsrfToken() {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; XSRF-TOKEN=`)
+  if (parts.length === 2) return parts.pop()?.split(';').shift()
+  return ''
+}
+
+const defaultHeaders = () => ({
+  'Content-Type': 'application/json',
+  'X-XSRF-TOKEN': getCsrfToken() || '',
+})
+
+
 /**
  * Perform a user login.
  */
 export async function loginApi(data: LoginFormValues): Promise<UserSummary> {
   const res = await fetch('/api/auth/login', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: defaultHeaders(),
     body: JSON.stringify(data),
   })
 
@@ -42,7 +55,7 @@ export async function loginApi(data: LoginFormValues): Promise<UserSummary> {
 export async function signupApi(data: SignupFormValues): Promise<UserSummary> {
   const res = await fetch('/api/auth/signup', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: defaultHeaders(),
     body: JSON.stringify(data),
   })
 
@@ -78,6 +91,7 @@ export async function getCurrentUserApi(): Promise<UserSummary | null> {
 export async function logoutApi(): Promise<void> {
   const res = await fetch('/api/auth/logout', {
     method: 'POST',
+    headers: { 'X-XSRF-TOKEN': getCsrfToken() || '' },
   })
 
   if (!res.ok) {
@@ -93,7 +107,7 @@ export async function forgotPasswordApi(
 ): Promise<{ message: string }> {
   const res = await fetch('/api/auth/forgot-password', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: defaultHeaders(),
     body: JSON.stringify(data),
   })
 
@@ -113,7 +127,7 @@ export async function resetPasswordApi(
 ): Promise<{ message: string }> {
   const res = await fetch('/api/auth/reset-password', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: defaultHeaders(),
     body: JSON.stringify(data),
   })
 

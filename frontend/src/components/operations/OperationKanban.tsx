@@ -34,11 +34,8 @@ export function OperationCard({ operation: op, detailBasePath }: CardProps) {
 
   return (
     <div
-      draggable
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
       onClick={() => navigate(`${detailBasePath}/${op.id}`)}
-      className="bg-white border border-slate-200 rounded-md p-3 cursor-grab hover:shadow-sm hover:border-slate-300 transition-all active:cursor-grabbing"
+      className="bg-white border border-slate-200 rounded-md p-3 cursor-pointer hover:shadow-sm hover:border-slate-300 transition-all"
       role="button"
       aria-label={`Open ${op.referenceCode}`}
     >
@@ -131,12 +128,7 @@ export function OperationKanbanColumn({
   return (
     // NO coloured column backgrounds — plain neutral bg per spec
     <div
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-      className={`flex flex-col min-w-[220px] w-56 shrink-0 rounded-md transition-colors ${
-        isDragOver ? "bg-slate-50 ring-2 ring-brand-200" : ""
-      }`}
+      className="flex flex-col min-w-[220px] w-56 shrink-0 rounded-md transition-colors"
     >
       {/* Column header */}
       <div className="flex items-center justify-between mb-2 px-1">
