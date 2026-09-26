@@ -33,7 +33,7 @@ export default function TransferDetailPage() {
 
   // Mock action handlers
   const handleValidate = () => alert(`[MOCK] Validate ${op.referenceCode}`);
-  const handlePrint    = () => alert(`[MOCK] Print ${op.referenceCode}`);
+  const handlePrint    = () => window.print();
   const handleCancel   = () => alert(`[MOCK] Cancel ${op.referenceCode}`);
 
   const isDone      = op.status === "DONE";
@@ -51,7 +51,7 @@ export default function TransferDetailPage() {
           <button
             id="transfer-back"
             onClick={() => navigate("/operations/transfers")}
-            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700"
+            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 print:hidden"
           >
             <ArrowLeft className="w-4 h-4" />
             Back
@@ -60,13 +60,13 @@ export default function TransferDetailPage() {
       />
 
       {/* Status pipeline */}
-      <div className="mb-6">
+      <div className="mb-6 print:hidden">
         <StatusPipeline operationType="TRANSFER" status={op.status} />
       </div>
 
       {/* Action bar */}
       {!isDone && !isCancelled && (
-        <div className="flex items-center gap-2 mb-6">
+        <div className="flex items-center gap-2 mb-6 print:hidden">
           <button
             id="transfer-validate"
             onClick={handleValidate}
@@ -94,7 +94,7 @@ export default function TransferDetailPage() {
         </div>
       )}
       {isDone && (
-        <div className="flex items-center gap-2 mb-6">
+        <div className="flex items-center gap-2 mb-6 print:hidden">
           <button
             id="transfer-print-done"
             onClick={handlePrint}
@@ -117,7 +117,7 @@ export default function TransferDetailPage() {
           <Field label="Warehouse"            value={op.referenceWarehouse.name} />
           <Field label="Source Location"      value={sourceLoc} />
           <Field label="Destination Location" value={destLoc} />
-          <Field label="Responsible"          value={op.responsibleUser?.name} />
+          <Field label="Responsible"          value={op.responsibleUser?.loginId} />
           <Field
             label="Scheduled Date"
             value={op.scheduledAt

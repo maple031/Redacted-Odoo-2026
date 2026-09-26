@@ -19,19 +19,31 @@ export default function DeliveryPage() {
   const [filters, setFilters] = useState<OperationFiltersState>({
     reference: "",
     contact: "",
+    status: "",
+    warehouse: "",
   });
 
+  const [operations, setOperations] = useState(MOCK_DELIVERIES);
+
   const filtered = useMemo(() => {
-    return MOCK_DELIVERIES.filter((op) => {
+    return operations.filter((op) => {
       const refMatch = op.referenceCode
         .toLowerCase()
         .includes(filters.reference.toLowerCase());
       const contactMatch =
         !filters.contact ||
-        op.partner?.name.toLowerCase().includes(filters.contact.toLowerCase());
-      return refMatch && contactMatch;
+        (op.partner?.name ?? "").toLowerCase().includes(filters.contact.toLowerCase());
+      const statusMatch = !filters.status || op.status === filters.status;
+      const warehouseMatch = !filters.warehouse || op.referenceWarehouse.id === filters.warehouse;
+      return refMatch && contactMatch && statusMatch && warehouseMatch;
     });
-  }, [filters]);
+  }, [filters, operations]);
+
+  const handleStatusChange = (operationId: string, newStatus: any) => {
+    setOperations((prev) =>
+      prev.map((op) => (op.id === operationId ? { ...op, status: newStatus } : op))
+    );
+  };
 
   return (
     <div>
@@ -58,6 +70,8 @@ export default function DeliveryPage() {
           filters={filters}
           onChange={setFilters}
           showContactFilter={true}
+          showWarehouseFilter={true}
+          availableStatuses={["DRAFT", "WAITING", "READY", "DONE", "CANCELLED"]}
         />
       </div>
 
@@ -74,6 +88,7 @@ export default function DeliveryPage() {
               operations={filtered}
               operationType="DELIVERY"
               detailBasePath={DETAIL_BASE}
+              onStatusChange={handleStatusChange}
             />
           </div>
         )}

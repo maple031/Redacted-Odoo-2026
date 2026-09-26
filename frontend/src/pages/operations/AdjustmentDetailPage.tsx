@@ -46,7 +46,7 @@ export default function AdjustmentDetailPage() {
   }
 
   const handleValidate = () => alert(`[MOCK] Validate ${adj.referenceCode}`);
-  const handlePrint    = () => alert(`[MOCK] Print ${adj.referenceCode}`);
+  const handlePrint    = () => window.print();
 
   const isDone = adj.status === "DONE";
 
@@ -59,7 +59,7 @@ export default function AdjustmentDetailPage() {
           <button
             id="adjustment-back"
             onClick={() => navigate("/operations/adjustments")}
-            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700"
+            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 print:hidden"
           >
             <ArrowLeft className="w-4 h-4" />
             Back
@@ -68,7 +68,7 @@ export default function AdjustmentDetailPage() {
       />
 
       {/* Status pipeline */}
-      <div className="mb-6">
+      <div className="mb-6 print:hidden">
         <StatusPipeline
           operationType="ADJUSTMENT"
           status={adj.status as OperationStatus}
@@ -76,7 +76,7 @@ export default function AdjustmentDetailPage() {
       </div>
 
       {/* Action bar */}
-      <div className="flex items-center gap-2 mb-6">
+      <div className="flex items-center gap-2 mb-6 print:hidden">
         {!isDone && (
           <button
             id="adjustment-validate"
@@ -110,7 +110,7 @@ export default function AdjustmentDetailPage() {
             </dd>
           </div>
           <Field label="Warehouse"  value={adj.referenceWarehouse.name} />
-          <Field label="Responsible" value={adj.responsibleUser?.name} />
+          <Field label="Responsible" value={adj.responsibleUser?.loginId} />
           <Field
             label="Scheduled Date"
             value={
@@ -163,7 +163,7 @@ export default function AdjustmentDetailPage() {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {adj.adjustmentLines.map((line) => {
-                  const diff = line.details.countedQty - line.details.systemQty;
+                  const diff = line.details.difference;
                   return (
                     <tr key={line.id} className="hover:bg-slate-50">
                       <td className="py-2.5 pr-4 font-mono text-xs text-slate-500">

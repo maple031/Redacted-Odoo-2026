@@ -33,7 +33,7 @@ export default function ReceiptDetailPage() {
 
   // Mock action handlers
   const handleValidate = () => alert(`[MOCK] Validate ${op.referenceCode}`);
-  const handlePrint    = () => alert(`[MOCK] Print ${op.referenceCode}`);
+  const handlePrint    = () => window.print();
   const handleCancel   = () => alert(`[MOCK] Cancel ${op.referenceCode}`);
 
   const isDone      = op.status === "DONE";
@@ -48,7 +48,7 @@ export default function ReceiptDetailPage() {
           <button
             id="receipt-back"
             onClick={() => navigate("/operations/receipts")}
-            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700"
+            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 print:hidden"
           >
             <ArrowLeft className="w-4 h-4" />
             Back
@@ -57,13 +57,13 @@ export default function ReceiptDetailPage() {
       />
 
       {/* Status pipeline */}
-      <div className="mb-6">
+      <div className="mb-6 print:hidden">
         <StatusPipeline operationType="RECEIPT" status={op.status} />
       </div>
 
       {/* Action bar */}
       {!isDone && !isCancelled && (
-        <div className="flex items-center gap-2 mb-6">
+        <div className="flex items-center gap-2 mb-6 print:hidden">
           <button
             id="receipt-validate"
             onClick={handleValidate}
@@ -91,7 +91,7 @@ export default function ReceiptDetailPage() {
         </div>
       )}
       {isDone && (
-        <div className="flex items-center gap-2 mb-6">
+        <div className="flex items-center gap-2 mb-6 print:hidden">
           <button id="receipt-print-done" onClick={handlePrint}
             className="flex items-center gap-1.5 px-3 py-2 border border-slate-200 text-slate-600 text-sm rounded-md hover:bg-slate-50 transition-colors">
             <Printer className="w-4 h-4" /> Print
@@ -113,7 +113,7 @@ export default function ReceiptDetailPage() {
           </div>
           <Field label="Receive From"   value={op.partner?.name} />
           <Field label="Warehouse"      value={op.referenceWarehouse.name} />
-          <Field label="Responsible"    value={op.responsibleUser?.name} />
+          <Field label="Responsible"    value={op.responsibleUser?.loginId} />
           <Field label="Scheduled Date"
             value={op.scheduledAt
               ? new Date(op.scheduledAt).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" })
