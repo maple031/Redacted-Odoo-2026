@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { fetchHealth, type HealthResponse } from '../api/health'
+import { fetchHealth, type HealthResponse } from '../../lib/api/health'
 
 /** Polls /api/health every 30 seconds and exposes the result via TanStack Query. */
 export function useHealth() {

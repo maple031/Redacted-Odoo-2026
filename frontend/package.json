@@ -1,6 +1,7 @@
 {
   "name": "stocksense-frontend",
   "version": "0.0.1",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -21,6 +22,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/node": "^26.6.3",
     "@types/react": "^18.3.8",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
