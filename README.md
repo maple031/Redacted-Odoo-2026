@@ -8,7 +8,7 @@ A domain-driven, modular-monolith inventory system.
 | State       | TanStack Query · React Router · React Hook Form · Zod         |
 | Backend     | Java 25 · Spring Boot 4.1.x · Maven · modular-monolith        |
 | Persistence | PostgreSQL 17 · Spring Data JPA · Flyway migrations           |
-| Auth        | Spring Security (session-based; full auth flow on a future branch) |
+| Auth        | Spring Security (session-based; with CSRF protection) |
 | Testing     | Testcontainers + `@ServiceConnection` (no static DB URL)      |
 | Dev infra   | Docker Compose (postgres · backend · frontend)                |
 
@@ -76,8 +76,9 @@ API calls from `localhost:5173` proxy to `localhost:8080` automatically (see
 
 ```
 com.stocksense
-├── auth/                   # Session auth (future feature branch)
+├── auth/                   # Session auth & CSRF
 ├── users/                  # User domain
+├── partner/                # Business partners
 ├── catalog/
 │   ├── product/            # Product aggregate
 │   ├── category/           # Category taxonomy
@@ -86,16 +87,19 @@ com.stocksense
 │   ├── warehouse/          # Warehouse aggregate
 │   └── location/           # Stock locations
 ├── inventory/
-│   ├── balance/            # On-hand balances (future)
-│   ├── movement/           # Stock ledger (future)
-│   └── reservation/        # Soft-locks (future)
+│   ├── balance/            # On-hand balances
+│   ├── movement/           # Stock ledger
+│   ├── posting/            # Inventory posting logic
+│   └── reservation/        # Soft-locks
 ├── operations/
-│   ├── receipt/            # Goods receipts (future)
-│   ├── delivery/           # Deliveries (future)
-│   ├── transfer/           # Transfers (future)
-│   └── adjustment/         # Adjustments (future)
-├── reporting/              # Reports (future)
-├── audit/                  # Audit log (future)
+│   ├── core/               # Shared operation logic
+│   ├── receipt/            # Goods receipts
+│   ├── delivery/           # Deliveries
+│   ├── transfer/           # Transfers
+│   └── adjustment/         # Adjustments
+├── dashboard/              # Dashboard metrics
+├── reporting/              # Reports
+├── audit/                  # Audit log
 ├── health/                 # GET /api/health
 └── config/                 # SecurityConfig, OpenApiConfig
 ```
@@ -106,9 +110,14 @@ com.stocksense
 
 Files in `backend/src/main/resources/db/migration/`.
 
-| Migration file          | Tables created                                                  |
-|-------------------------|-----------------------------------------------------------------|
-| `V001__initial_schema`  | `app_user`, `category`, `unit_of_measure`, `product`, `warehouse`, `location` |
+| Migration file                   | Tables created                                                  |
+|----------------------------------|-----------------------------------------------------------------|
+| `V001__initial_schema.sql`       | `app_user`, `category`, `unit_of_measure`, `product`, `warehouse`, `location` |
+| `V002__inventory_core.sql`       | `business_partner`, `reorder_rule`, `inventory_operation`, `operation_line`, `inventory_adjustment_detail`, `stock_movement`, `inventory_balance`, `reservation`, `audit_log` |
+| `V003__auth_user_management.sql` | `password_reset_challenge`                                      |
+| `V004__warehouse_requirements.sql`| *(Alters location constraints)*                                 |
+| `V005__operation_references.sql` | `operation_sequence`                                            |
+| `V006__delivery_details.sql`     | `delivery_detail`                                               |
 
 All tables use UUID primary keys and `created_at` / `updated_at TIMESTAMPTZ` audit columns.
 
