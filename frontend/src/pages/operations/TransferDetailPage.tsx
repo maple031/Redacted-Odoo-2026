@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, CheckCircle, Printer, XCircle } from "lucide-react";
 
-import { MOCK_RECEIPTS } from "@/features/operations/mockData";
+import { MOCK_TRANSFERS } from "@/features/operations/mockData";
 import OperationPageHeader from "@/components/operations/OperationPageHeader";
 import StatusPipeline from "@/components/operations/StatusPipeline";
 import LineItemsTable from "@/components/operations/LineItemsTable";
@@ -18,15 +18,15 @@ function Field({ label, value }: { label: string; value?: string | null }) {
   );
 }
 
-export default function ReceiptDetailPage() {
+export default function TransferDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const op = MOCK_RECEIPTS.find((r) => r.id === id);
+  const op = MOCK_TRANSFERS.find((t) => t.id === id);
 
   if (!op) {
     return (
       <div className="py-20 text-center text-slate-400 text-sm">
-        Receipt <span className="font-mono">{id}</span> not found.
+        Internal Transfer <span className="font-mono">{id}</span> not found.
       </div>
     );
   }
@@ -39,15 +39,18 @@ export default function ReceiptDetailPage() {
   const isDone      = op.status === "DONE";
   const isCancelled = op.status === "CANCELLED";
 
+  const sourceLoc = op.lines[0]?.sourceLocation?.name;
+  const destLoc   = op.lines[0]?.destinationLocation?.name;
+
   return (
     <div>
       <OperationPageHeader
         title={op.referenceCode}
-        subtitle="Receipt"
+        subtitle="Internal Transfer"
         actions={
           <button
-            id="receipt-back"
-            onClick={() => navigate("/operations/receipts")}
+            id="transfer-back"
+            onClick={() => navigate("/operations/transfers")}
             className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -58,14 +61,14 @@ export default function ReceiptDetailPage() {
 
       {/* Status pipeline */}
       <div className="mb-6">
-        <StatusPipeline operationType="RECEIPT" status={op.status} />
+        <StatusPipeline operationType="TRANSFER" status={op.status} />
       </div>
 
       {/* Action bar */}
       {!isDone && !isCancelled && (
         <div className="flex items-center gap-2 mb-6">
           <button
-            id="receipt-validate"
+            id="transfer-validate"
             onClick={handleValidate}
             className="flex items-center gap-1.5 px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white text-sm rounded-md transition-colors"
           >
@@ -73,7 +76,7 @@ export default function ReceiptDetailPage() {
             Validate
           </button>
           <button
-            id="receipt-print"
+            id="transfer-print"
             onClick={handlePrint}
             className="flex items-center gap-1.5 px-3 py-2 border border-slate-200 text-slate-600 text-sm rounded-md hover:bg-slate-50 transition-colors"
           >
@@ -81,7 +84,7 @@ export default function ReceiptDetailPage() {
             Print
           </button>
           <button
-            id="receipt-cancel"
+            id="transfer-cancel"
             onClick={handleCancel}
             className="flex items-center gap-1.5 px-3 py-2 border border-red-200 text-red-600 text-sm rounded-md hover:bg-red-50 transition-colors"
           >
@@ -92,8 +95,11 @@ export default function ReceiptDetailPage() {
       )}
       {isDone && (
         <div className="flex items-center gap-2 mb-6">
-          <button id="receipt-print-done" onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3 py-2 border border-slate-200 text-slate-600 text-sm rounded-md hover:bg-slate-50 transition-colors">
+          <button
+            id="transfer-print-done"
+            onClick={handlePrint}
+            className="flex items-center gap-1.5 px-3 py-2 border border-slate-200 text-slate-600 text-sm rounded-md hover:bg-slate-50 transition-colors"
+          >
             <Printer className="w-4 h-4" /> Print
           </button>
         </div>
@@ -103,25 +109,25 @@ export default function ReceiptDetailPage() {
       <div className="bg-white border border-slate-200 rounded-lg divide-y divide-slate-100">
         {/* Header fields */}
         <div className="p-5 grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-4">
-          <Field label="Reference"      value={op.referenceCode} />
-          <Field label="Status"
-            value={undefined}
-          />
+          <Field label="Reference"            value={op.referenceCode} />
           <div>
             <dt className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-0.5">Status</dt>
             <dd><StatusBadge status={op.status} /></dd>
           </div>
-          <Field label="Receive From"   value={op.partner?.name} />
-          <Field label="Warehouse"      value={op.referenceWarehouse.name} />
-          <Field label="Responsible"    value={op.responsibleUser?.name} />
-          <Field label="Scheduled Date"
+          <Field label="Warehouse"            value={op.referenceWarehouse.name} />
+          <Field label="Source Location"      value={sourceLoc} />
+          <Field label="Destination Location" value={destLoc} />
+          <Field label="Responsible"          value={op.responsibleUser?.name} />
+          <Field
+            label="Scheduled Date"
             value={op.scheduledAt
-              ? new Date(op.scheduledAt).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" })
+              ? new Date(op.scheduledAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
               : undefined}
           />
           {op.completedAt && (
-            <Field label="Completed Date"
-              value={new Date(op.completedAt).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" })}
+            <Field
+              label="Completed Date"
+              value={new Date(op.completedAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
             />
           )}
           {op.notes && (

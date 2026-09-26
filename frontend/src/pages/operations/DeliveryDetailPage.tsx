@@ -5,7 +5,7 @@ import { MOCK_DELIVERIES } from "@/features/operations/mockData";
 import OperationPageHeader from "@/components/operations/OperationPageHeader";
 import StatusPipeline from "@/components/operations/StatusPipeline";
 import LineItemsTable from "@/components/operations/LineItemsTable";
-import StatusBadge from "@/components/operations/StatusBadge";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 
 // Delivery address is a mock extension — stored per-operation via a side map
 const DELIVERY_ADDRESSES: Record<string, string> = {
