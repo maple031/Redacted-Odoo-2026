@@ -1,0 +1,80 @@
+:root {
+  /* Base */
+  --background: 210 40% 98%;      /* #F8FAFC */
+  --foreground: 222 47% 11%;      /* #0F172A */
+  
+  /* Surface */
+  --card: 0 0% 100%;              /* #FFFFFF */
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --surface: 0 0% 100%;
+  --surface-muted: 210 40% 96%;
+
+  /* Borders */
+  --border: 214 32% 91%;          /* #E2E8F0 */
+  --border-strong: 213 27% 84%;   /* #CBD5E1 */
+  
+  /* Primary */
+  --primary: 221 83% 53%;         /* #2563EB */
+  --primary-hover: 224 76% 48%;   /* #1D4ED8 */
+  --primary-foreground: 0 0% 100%;/* #FFFFFF */
+  
+  /* Text */
+  --text-primary: 222 47% 11%;    /* #0F172A */
+  --text-secondary: 215 19% 35%;  /* #475569 */
+  --text-muted: 215 25% 47%;      /* #64748B */
+  --muted: 210 40% 96%;           
+  --muted-foreground: 215 25% 47%;
+  
+  /* Sidebar */
+  --sidebar: 222 47% 11%;         /* #0F172A */
+  --sidebar-hover: 217 32% 17%;   /* #1E293B */
+  --sidebar-foreground: 0 0% 100%;
+  --sidebar-muted: 215 19% 35%;
+  
+  /* Status: Success / Done / In Stock */
+  --success: 142 72% 29%;         /* #15803D */
+  --success-bg: 138 76% 97%;      /* #F0FDF4 */
+  --success-border: 141 84% 85%;  /* #BBF7D0 */
+
+  /* Status: Warning / Waiting / Low Stock / Pending */
+  --warning: 32 90% 37%;          /* #B45309 */
+  --warning-bg: 48 100% 96%;      /* #FFFBEB */
+  --warning-border: 48 96% 77%;   /* #FDE68A */
+
+  /* Status: Danger / Failed / Out of Stock / Validation Error */
+  --danger: 0 74% 42%;            /* #B91C1C */
+  --danger-bg: 0 86% 97%;         /* #FEF2F2 */
+  --danger-border: 0 74% 89%;     /* #FECACA */
+  
+  /* Status: Draft */
+  --draft: 215 19% 35%;           /* #475569 */
+  --draft-bg: 210 40% 96%;        /* #F1F5F9 */
+  --draft-border: 213 27% 84%;    /* #CBD5E1 */
+
+  /* Status: Ready */
+  --ready: 222 47% 11%;           /* #0F172A */
+  --ready-bg: 0 0% 100%;          /* #FFFFFF */
+  --ready-border: 214 32% 65%;    /* #94A3B8 */
+
+  /* Status: Cancelled */
+  --cancelled: 0 70% 35%;         /* #991B1B */
+  --cancelled-bg: 0 86% 97%;      /* #FEF2F2 */
+  --cancelled-border: 0 74% 89%;  /* #FECACA */
+
+  /* Shadcn compatibility additions */
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222 47% 11%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222 47% 11%;
+  --destructive: var(--danger);
+  --destructive-foreground: 0 0% 100%;
+  --input: var(--border);
+  --ring: var(--primary);
+  
+  /* Radius */
+  --radius: 0.375rem;             /* 6px */
+  --radius-sm: 0.375rem;          /* 6px */
+  --radius-md: 0.5rem;            /* 8px */
+}
